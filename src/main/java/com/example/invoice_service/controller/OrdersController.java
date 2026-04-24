@@ -8,6 +8,7 @@ import com.example.invoice_service.entity.response.OrderReportDetails;
 import com.example.invoice_service.repository.OrderRepository;
 import com.example.invoice_service.repository.SourceRepository;
 import com.example.invoice_service.service.ExcelService;
+import com.example.invoice_service.service.MailService;
 import com.example.invoice_service.service.OrdersService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class OrdersController {
 
     @Autowired
     ExcelService excelService;
+
+    @Autowired
+    MailService mailService;
 
     @GetMapping("/sync")
     public ApiResponse<?> sync(@RequestParam(name = "fromDate") String fromDate,

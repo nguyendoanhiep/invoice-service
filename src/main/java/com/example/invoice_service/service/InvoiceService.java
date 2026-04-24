@@ -30,8 +30,10 @@ import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -65,6 +67,12 @@ public class InvoiceService {
 
     @Value("${misa.is-send-email:true}")
     boolean misaIsSendEmail;
+
+    @Value("${send-email-warning-to}")
+    String sendEmailWarningTo;
+
+    @Autowired
+    MailService mailService;
 
     public boolean publishInvoiceByIds(List<String> ids) {
         String orderIds = "";
@@ -164,6 +172,12 @@ public class InvoiceService {
                     } else {
                         if(!orderChange.getPublishInvoiceStatus().equals("SUCCESS")){
                             orderChange.setPublishInvoiceStatus("FAIL");
+                            Arrays.asList(sendEmailWarningTo.split(" ")).forEach(to -> CompletableFuture.runAsync(() ->
+                                    mailService.sendMail(
+                                            to,
+                                            "Đơn hàng : " + orderChange.getId() + " xuất hoá đơn thất bại"
+                                    )
+                            ));
                         }
                     }
                     orderRepository.save(orderChange);
@@ -203,7 +217,8 @@ public class InvoiceService {
 
             String address = order.getAddressBuyer();
             List<String> missingInfos = new ArrayList<>();
-            String fullName = order.getFullNameBuyer().replaceAll("[^\\p{L}\\p{N} ]", "");
+            String fullName = Normalizer.normalize(order.getFullNameBuyer(), Normalizer.Form.NFKC)
+                    .replaceAll("[^a-zA-Z0-9À-ỹ ]", "");
             if (StringUtils.isBlank(fullName)) {
                 missingInfos.add("Tên");
             }
