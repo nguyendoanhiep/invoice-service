@@ -225,6 +225,7 @@ public class OrdersService {
                         List<LineItem> lineItem = orderSapoResponse
                                 .lineItems()
                                 .stream()
+                                .filter(lineItemSapo -> Boolean.FALSE.equals(lineItemSapo.deleted()))
                                 .map(
                                         lineItemSapo -> LineItem.builder()
                                                 .id(lineItemSapo.id())

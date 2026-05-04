@@ -64,7 +64,9 @@ public record OrderSapoResponse(
             String sku,
 
             @JsonProperty("original_total")
-            BigDecimal originalTotal
+            BigDecimal originalTotal,
+
+            Boolean deleted
 
     ) {}
 
