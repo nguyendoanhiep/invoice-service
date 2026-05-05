@@ -38,7 +38,7 @@ public class InvoiceJobDaily {
     @Autowired
     TaskScheduler taskScheduler;
 
-    @Scheduled(cron = "0 58 * * * *")
+    @Scheduled(cron = "0 59 * * * *")
     public void runAtMinute59EveryHour() throws Exception {
         log.info("⏰ Job chạy lúc phút 59 của mỗi giờ");
         DateTimeFormatter fmt =
