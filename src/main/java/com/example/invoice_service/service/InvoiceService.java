@@ -68,7 +68,7 @@ public class InvoiceService {
     @Value("${misa.is-send-email:true}")
     boolean misaIsSendEmail;
 
-    @Value("${send-email-warning-to}")
+    @Value("${send-email-warning-to:hieppnguyenn.dev@gmail.com}")
     String sendEmailWarningTo;
 
     @Autowired

@@ -38,14 +38,16 @@ public class InvoiceJobDaily {
     @Autowired
     TaskScheduler taskScheduler;
 
-    @Scheduled(cron = "0 59 * * * *")
+    @Scheduled(cron = "0 58 * * * *")
     public void runAtMinute59EveryHour() throws Exception {
         log.info("⏰ Job chạy lúc phút 59 của mỗi giờ");
         DateTimeFormatter fmt =
                 DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         LocalDateTime time = LocalDateTime.now();
         String toDate = time.format(fmt);
-        String fromDate = LocalDate.now().atStartOfDay()
+        String fromDate = LocalDate.now()
+                .minusDays(1)
+                .atStartOfDay()
                 .withSecond(0)
                 .withNano(0)
                 .format(fmt);
@@ -61,10 +63,10 @@ public class InvoiceJobDaily {
         try {
             invoiceAuto(fromDate, toDate, "Xuất hoá đơn vào phút 59 của mỗi giờ");
         } catch (Exception e) {
-            log.error("invoice fail, sẽ retry sau 1 phút");
+            log.error("invoice fail, sẽ retry sau 30 giây");
             taskScheduler.schedule(
-                    () -> invoiceAuto(fromDate, toDate, "Retry lại sau 1 phút khi xuất hoá đơn vào phút 59 của mỗi giờ thất bại"),
-                    Instant.now().plusSeconds(50)
+                    () -> invoiceAuto(fromDate, toDate, "Retry lại sau 30 giây khi xuất hoá đơn vào phút 59 của mỗi giờ thất bại"),
+                    Instant.now().plusSeconds(30)
             );
         }
     }
@@ -75,8 +77,8 @@ public class InvoiceJobDaily {
         DateTimeFormatter fmt =
                 DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         LocalDateTime time = LocalDateTime.now();
-        String toDate = time.format(fmt);
         String fromDate = time.minusHours(2).format(fmt);
+        String toDate = time.format(fmt);
         try {
             ordersAuto(fromDate, toDate, "Đồng bộ đơn hàng vào 00H30 mỗi ngày");
         } catch (Exception e) {
@@ -89,10 +91,10 @@ public class InvoiceJobDaily {
         try {
             invoiceAuto(fromDate, toDate, "Xuất hoá đơn vào 00H30 mỗi ngày");
         } catch (Exception e) {
-            log.error("invoice fail, sẽ retry sau 1 phút");
+            log.error("invoice fail, sẽ retry sau 30 giây");
             taskScheduler.schedule(
-                    () -> invoiceAuto(fromDate, toDate, "Retry lại sau 1 phút khi xuất hoá đơn vào 00H30 mỗi ngày thất bại"),
-                    Instant.now().plusSeconds(50)
+                    () -> invoiceAuto(fromDate, toDate, "Retry lại sau 30 giây khi xuất hoá đơn vào 00H30 mỗi ngày thất bại"),
+                    Instant.now().plusSeconds(30)
             );
         }
     }
@@ -138,6 +140,7 @@ public class InvoiceJobDaily {
     }
 
     public void invoiceAuto(String fromDate, String toDate, String message) {
+        log.info(message);
         try {
             invoiceService.publishInvoiceByDate(null, null, fromDate, toDate);
             historyRepository.save(
