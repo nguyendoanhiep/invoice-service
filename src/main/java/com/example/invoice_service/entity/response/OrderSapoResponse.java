@@ -13,8 +13,8 @@ public record OrderSapoResponse(
         @JsonProperty("created_on")
         LocalDateTime createdOn,
 
-        @JsonProperty("processed_on")
-        String processedOn,
+        @JsonProperty("modified_on")
+        String modifiedOn,
 
         String email,
 

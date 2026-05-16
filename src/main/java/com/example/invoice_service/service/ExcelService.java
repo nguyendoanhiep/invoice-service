@@ -89,7 +89,7 @@ public class ExcelService {
                     order.setCurrency(orderSapoResponse.currency());
                     order.setTotal(orderSapoResponse.totalPrice());
                     order.setDateCreated(orderSapoResponse.createdOn().plusHours(7));
-                    order.setDateCompleted(orderSapoResponse.processedOn());
+                    order.setDateCompleted(orderSapoResponse.modifiedOn());
                     order.setPaymentMethod(orderSapoResponse.gateway());
                     if (!Objects.isNull(orderSapoResponse.billingAddress())) {
                         String address = Stream.of(
