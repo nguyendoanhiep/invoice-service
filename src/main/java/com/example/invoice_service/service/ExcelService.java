@@ -383,7 +383,11 @@ public class ExcelService {
                     }
                     //ghi chu
                     Cell ghiChu = row.createCell(12);
-                    ghiChu.setCellValue(order.getNote());
+                    String note = "";
+                    if (order.getNote() != null) {
+                        note = order.getNote().replace("no_invoice", "");
+                    }
+                    ghiChu.setCellValue(note);
                     ghiChu.setCellStyle(defaultStyle);
 
 

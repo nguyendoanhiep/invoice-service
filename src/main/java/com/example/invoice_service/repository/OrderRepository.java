@@ -32,11 +32,11 @@ public interface OrderRepository extends JpaRepository<Orders,String> {
     @Query("""
     select o
     from Orders o
-    where o.dateCreated >= :fromDate
-    and o.dateCreated <= :toDate
+    where o.issueDateInvoice >= :fromDate
+    and o.issueDateInvoice <= :toDate
     and o.publishInvoiceStatus in (:statusList)
     and (:systemName is null or o.systemName = :systemName)
-    order by o.dateCreated DESC
+    order by o.issueDateInvoice DESC
     """)
     List<Orders> getAllByDate(String systemName, LocalDateTime fromDate , LocalDateTime toDate ,List<String>statusList);
 
@@ -87,8 +87,8 @@ public interface OrderRepository extends JpaRepository<Orders,String> {
         COALESCE(SUM(CAST(o.vat_amount AS DECIMAL(18,2))), 0) AS totalVatAmount
     FROM orders o
     WHERE o.system_name = :systemName
-       AND o.date_created >= :fromDate
-       AND o.date_created < :toDate
+       AND o.issue_date_invoice >= :fromDate
+       AND o.issue_date_invoice < :toDate
     GROUP BY o.source
     ORDER BY o.source
 """, nativeQuery = true)
@@ -102,7 +102,7 @@ public interface OrderRepository extends JpaRepository<Orders,String> {
     @Query(value = """
     SELECT 
         o.system_name AS name,
-        MONTH(o.date_created) AS month,
+        MONTH(o.issue_date_invoice) AS month,
         o.source AS source,
         COUNT(o.id) AS totalOrders,
         SUM(CAST(o.total AS DECIMAL(18,2))) AS totalAmount,
@@ -110,9 +110,9 @@ public interface OrderRepository extends JpaRepository<Orders,String> {
         SUM(CAST(o.vat_amount AS DECIMAL(18,2))) AS totalVatAmount
     FROM orders o
     WHERE o.system_name = :systemName
-       AND o.date_created >= :fromDate
-       AND o.date_created < :toDate
-    GROUP BY MONTH(o.date_created), o.source, o.system_name
+       AND o.issue_date_invoice >= :fromDate
+       AND o.issue_date_invoice < :toDate
+    GROUP BY MONTH(o.issue_date_invoice), o.source, o.system_name
     ORDER BY month ASC
 """, nativeQuery = true)
     List<OrderReportDetails> reportDetails(

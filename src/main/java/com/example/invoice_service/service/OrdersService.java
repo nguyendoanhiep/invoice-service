@@ -413,6 +413,7 @@ public class OrdersService {
         orders.setEmailBuyer(infoBuyerRequest.getEmailBuyer());
         orders.setNumberPhoneBuyer(infoBuyerRequest.getNumberPhoneBuyer());
         orders.setAddressBuyer(infoBuyerRequest.getAddressBuyer());
+        orders.setNote(infoBuyerRequest.getNote());
         orderRepository.save(orders);
         return true;
     }

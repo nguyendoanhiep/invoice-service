@@ -78,6 +78,7 @@ public class InvoiceService {
         String orderIds = "";
         try {
             List<Orders> orders = orderRepository.getAllByIds(ids);
+            orders.removeIf(orderItem -> orderItem.getNote() != null && orderItem.getNote().contains("no_invoice"));
             if (orders.isEmpty()) throw new BusinessException("400","Không còn đơn hàng nào trong khoảng thời gian này chưa xuất hoá đơn");
             publishInvoice(orders);
             orderIds = orders.stream()
@@ -121,6 +122,7 @@ public class InvoiceService {
         String orderIds = "";
         try{
             List<Orders> orders = orderRepository.getAllByDate(systemName,source,LocalDateTime.parse(fromDate), LocalDateTime.parse(toDate) , List.of("FAIL","INIT") , true);
+            orders.removeIf(orderItem -> orderItem.getNote() != null && orderItem.getNote().contains("no_invoice"));
             if (orders.isEmpty()) throw new BusinessException("400","Không còn đơn hàng nào trong khoảng thời gian này chưa xuất hoá đơn");
             publishInvoice(orders);
             orderIds = orders.stream()
@@ -165,7 +167,7 @@ public class InvoiceService {
                     "DuplicateInvoiceRefID".equalsIgnoreCase(publishInvoiceItemResponse.ErrorCode())) {
                         orderChange.setPublishInvoiceStatus("SUCCESS");
                         orderChange.setTransactionID(publishInvoiceItemResponse.TransactionID());
-                        orderChange.setIssueDateInvoice(LocalDate.now().toString());
+                        orderChange.setIssueDateInvoice(LocalDate.now());
                         InvoiceData invoiceData = body.invoiceData().stream().filter(data -> data.refId().equalsIgnoreCase(publishInvoiceItemResponse.RefID())).findFirst().orElse(InvoiceData.builder().build());
                         orderChange.setOriginalAmount(BigDecimal.valueOf(invoiceData.totalAmountWithoutVATOC()));
                         orderChange.setVatAmount(BigDecimal.valueOf(invoiceData.totalVATAmountOC()));

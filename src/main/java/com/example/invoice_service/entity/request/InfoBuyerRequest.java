@@ -9,4 +9,5 @@ public class InfoBuyerRequest {
     String emailBuyer;
     String addressBuyer;
     String numberPhoneBuyer;
+    String note;
 }

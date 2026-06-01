@@ -1,10 +1,12 @@
 package com.example.invoice_service.controller;
 
+import com.example.invoice_service.entity.Orders;
 import com.example.invoice_service.entity.Source;
 import com.example.invoice_service.entity.request.InfoBuyerRequest;
 import com.example.invoice_service.entity.request.SourceRequest;
 import com.example.invoice_service.entity.response.ApiResponse;
 import com.example.invoice_service.entity.response.OrderReportDetails;
+import com.example.invoice_service.exception.BusinessException;
 import com.example.invoice_service.repository.OrderRepository;
 import com.example.invoice_service.repository.SourceRepository;
 import com.example.invoice_service.service.ExcelService;
@@ -18,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,8 +42,6 @@ public class OrdersController {
     @Autowired
     ExcelService excelService;
 
-    @Autowired
-    MailService mailService;
 
     @GetMapping("/sync")
     public ApiResponse<?> sync(@RequestParam(name = "fromDate") String fromDate,
@@ -58,6 +59,15 @@ public class OrdersController {
         Source source = sourceRepository.findById(sourceRequest.name()).orElseThrow();
         source.setPublishInvoice(sourceRequest.publishInvoice());
         return ApiResponse.builder().data(sourceRepository.save(source)).build();
+    }
+
+    @PostMapping("/mark-is-publish")
+    public ApiResponse<?> markIsPublish(@RequestParam String id , @RequestParam LocalDate date) {
+        Orders orders = orderRepository.findById(id).orElseThrow(()->new BusinessException("400" , "Dữ liệu không tồn tại"));
+        orders.setPublishInvoiceStatus("SUCCESS");
+        orders.setIssueDateInvoice(date);
+        orderRepository.save(orders);
+        return ApiResponse.builder().data(true).build();
     }
 
     @GetMapping("/report")

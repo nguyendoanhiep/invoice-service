@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -30,7 +31,7 @@ public class Orders {
     private String transactionID;
     private BigDecimal originalAmount;
     private BigDecimal vatAmount;
-    private String issueDateInvoice;
+    private LocalDate issueDateInvoice;
     private String rootSource;
     private String staffName;
     private String note;
