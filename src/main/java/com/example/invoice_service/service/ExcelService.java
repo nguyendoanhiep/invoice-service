@@ -24,10 +24,9 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -250,7 +249,7 @@ public class ExcelService {
 
 
     public byte[] exportToExcel(String fromDate, String toDate) {
-        List<Orders> orderAll = orderRepository.getAllByDate(HUGO_SIM.name(), LocalDateTime.parse(fromDate), LocalDateTime.parse(toDate), List.of("SUCCESS"));
+        List<Orders> orderAll = orderRepository.getAllByDate(HUGO_SIM.name(), LocalDateTime.parse(fromDate).toLocalDate(), LocalDateTime.parse(toDate).toLocalDate(), List.of("SUCCESS"));
 //        var webOrders = getOrderWeb(fromDate, toDate);
 //        var sapoOrders = getOrderSapo(fromDate, toDate);
 //        orderAll.addAll(webOrders);
@@ -317,12 +316,22 @@ public class ExcelService {
 
                     // Ngày
                     Cell dateCell = row.createCell(2);
-                    LocalDateTime ldt = order.getDateCreated();
-                    dateCell.setCellValue(ldt);
+                    dateCell.setCellValue(order.getDateCreated());
                     dateCell.setCellStyle(dateStyle);
 
+                    // Ngày thanh toán
+                    Cell ngayThanhToanCell = row.createCell(3);
+
+                    ngayThanhToanCell.setCellValue(parseDateTime(order.getDateCompleted()));
+                    ngayThanhToanCell.setCellStyle(dateStyle);
+
+                    // Ngày xuất hoá đơn
+                    Cell datePublish = row.createCell(4);
+                    datePublish.setCellValue(order.getIssueDateInvoice());
+                    datePublish.setCellStyle(dateStyle);
+
                     // Tên
-                    Cell name = row.createCell(3);
+                    Cell name = row.createCell(5);
                     name.setCellValue(
                             order.getFullNameBuyer() != null
                                     ? order.getFullNameBuyer()
@@ -331,7 +340,7 @@ public class ExcelService {
                     name.setCellStyle(defaultStyle);
 
                     // Mail
-                    Cell mail = row.createCell(4);
+                    Cell mail = row.createCell(6);
                     mail.setCellValue(
                             order.getEmailBuyer()
                     );
@@ -339,7 +348,7 @@ public class ExcelService {
 
 
                     // Điện thoại
-                    Cell numberPhone = row.createCell(5);
+                    Cell numberPhone = row.createCell(7);
                     numberPhone.setCellValue(
                             order.getNumberPhoneBuyer()
                     );
@@ -347,22 +356,22 @@ public class ExcelService {
 
 
                     // Tên eSIM
-                    Cell productName = row.createCell(6);
+                    Cell productName = row.createCell(8);
                     productName.setCellValue(item.name());
                     productName.setCellStyle(defaultStyle);
 
                     // Số lượng
-                    Cell quantity = row.createCell(7);
+                    Cell quantity = row.createCell(9);
                     quantity.setCellValue(item.quantity());
                     quantity.setCellStyle(defaultStyle);
 
                     // Đơn giá
-                    Cell price = row.createCell(8);
+                    Cell price = row.createCell(10);
                     price.setCellValue(item.price());
                     price.setCellStyle(moneyStyle);
 
                     // Số ngày
-                    Cell soNgayCell = row.createCell(9);
+                    Cell soNgayCell = row.createCell(11);
                     String soNgay = getSoNgay(item);
                     if (!soNgay.isBlank()) {
                         soNgayCell.setCellValue(Integer.parseInt(soNgay));
@@ -371,18 +380,18 @@ public class ExcelService {
 
 
                     //  Dung lượng
-                    Cell dungLuong = row.createCell(10);
+                    Cell dungLuong = row.createCell(12);
                     dungLuong.setCellValue(getDungLuong(item));
                     dungLuong.setCellStyle(defaultStyle);
 
                     //  tổng tiền
-                    Cell moneyCell = row.createCell(11);
+                    Cell moneyCell = row.createCell(13);
                     if (item.total() != null && !item.total().isBlank()) {
                         moneyCell.setCellValue(Double.parseDouble(item.total()));
                         moneyCell.setCellStyle(moneyStyle);
                     }
                     //ghi chu
-                    Cell ghiChu = row.createCell(12);
+                    Cell ghiChu = row.createCell(14);
                     String note = "";
                     if (order.getNote() != null) {
                         note = order.getNote().replace("no_invoice", "");
@@ -392,11 +401,11 @@ public class ExcelService {
 
 
                     // 10. Nguồn gốc
-                    Cell sourceCell = row.createCell(13);
+                    Cell sourceCell = row.createCell(15);
                     sourceCell.setCellValue(order.getRootSource());
                     sourceCell.setCellStyle(defaultStyle);
 
-                    Cell nhanVien = row.createCell(14);
+                    Cell nhanVien = row.createCell(16);
                     nhanVien.setCellValue(order.getStaffName());
                     nhanVien.setCellStyle(defaultStyle);
 
@@ -446,5 +455,21 @@ public class ExcelService {
                 })
                 .findFirst()
                 .orElse("");
+    }
+
+    public static LocalDateTime parseDateTime(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+
+        try {
+            // Trường hợp: 2026-05-28T01:30:34Z
+            return Instant.parse(value)
+                    .atZone(ZoneId.of("Asia/Ho_Chi_Minh"))
+                    .toLocalDateTime();
+        } catch (DateTimeParseException e) {
+            // Trường hợp: 2026-05-28T01:30:34
+            return LocalDateTime.parse(value);
+        }
     }
 }

@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -62,10 +63,14 @@ public class OrdersController {
     }
 
     @PostMapping("/mark-is-publish")
-    public ApiResponse<?> markIsPublish(@RequestParam String id , @RequestParam LocalDate date) {
+    public ApiResponse<?> markIsPublish(@RequestParam String id ,
+                                        @RequestParam LocalDate date,
+                                        @RequestParam BigDecimal vat) {
         Orders orders = orderRepository.findById(id).orElseThrow(()->new BusinessException("400" , "Dữ liệu không tồn tại"));
         orders.setPublishInvoiceStatus("SUCCESS");
         orders.setIssueDateInvoice(date);
+        orders.setVatAmount(vat);
+        orders.setOriginalAmount(orders.getTotal().subtract(vat));
         orderRepository.save(orders);
         return ApiResponse.builder().data(true).build();
     }

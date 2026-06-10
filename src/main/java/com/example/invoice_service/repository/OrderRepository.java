@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public interface OrderRepository extends JpaRepository<Orders,String> {
     and (:systemName is null or o.systemName = :systemName)
     order by o.issueDateInvoice DESC
     """)
-    List<Orders> getAllByDate(String systemName, LocalDateTime fromDate , LocalDateTime toDate ,List<String>statusList);
+    List<Orders> getAllByDate(String systemName, LocalDate fromDate , LocalDate toDate , List<String>statusList);
 
 
     @Query("""
