@@ -70,6 +70,9 @@ public record InvoiceData(
         @JsonProperty("TotalVATAmountOC")
         double totalVATAmountOC,
 
+        @JsonProperty("TotalVATAmount")
+        double totalVATAmount,
+
         @JsonProperty("TotalDiscountAmountOC")
         double totalDiscountAmountOC,
 

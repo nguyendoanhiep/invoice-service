@@ -284,6 +284,7 @@ public class InvoiceService {
                     .totalAmountWithoutVATOC(Double.parseDouble(String.valueOf(originalPrice)))
                     .totalAmountWithoutVAT(Double.parseDouble(String.valueOf(originalPrice)))
                     .totalVATAmountOC(Double.parseDouble(String.valueOf(vatAmount)))
+                    .totalVATAmount(Double.parseDouble(String.valueOf(vatAmount)))
                     .originalInvoiceDetail(originalInvoiceDetail)
                     .TotalAmountInWords(moneyWords)
                     .totalSaleAmountOC(originalPrice)
