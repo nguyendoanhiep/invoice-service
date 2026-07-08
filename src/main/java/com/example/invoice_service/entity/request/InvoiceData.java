@@ -64,6 +64,9 @@ public record InvoiceData(
         @JsonProperty("TotalAmountWithoutVATOC")
         double totalAmountWithoutVATOC,
 
+        @JsonProperty("TotalAmountWithoutVAT")
+        double totalAmountWithoutVAT,
+
         @JsonProperty("TotalVATAmountOC")
         double totalVATAmountOC,
 
@@ -73,8 +76,17 @@ public record InvoiceData(
         @JsonProperty("TotalAmountOC")
         double totalAmountOC,
 
+        @JsonProperty("TotalAmount")
+        double totalAmount,
+
         @JsonProperty("TotalAmountInWords")
         String TotalAmountInWords,
+
+        @JsonProperty("TotalSaleAmountOC")
+        double totalSaleAmountOC,
+
+        @JsonProperty("TotalSaleAmount")
+        double totalSaleAmount,
 
         @JsonProperty("OriginalInvoiceDetail")
         List<OriginalInvoiceDetail> originalInvoiceDetail,

@@ -280,10 +280,14 @@ public class InvoiceService {
                     .buyerEmail(order.getEmailBuyer())
                     .buyerPhoneNumber(order.getNumberPhoneBuyer())
                     .totalAmountOC(order.getTotal().longValue())
+                    .totalAmount(order.getTotal().longValue())
                     .totalAmountWithoutVATOC(Double.parseDouble(String.valueOf(originalPrice)))
+                    .totalAmountWithoutVAT(Double.parseDouble(String.valueOf(originalPrice)))
                     .totalVATAmountOC(Double.parseDouble(String.valueOf(vatAmount)))
                     .originalInvoiceDetail(originalInvoiceDetail)
                     .TotalAmountInWords(moneyWords)
+                    .totalSaleAmountOC(originalPrice)
+                    .totalSaleAmount(originalPrice)
                     .taxRateInfo(taxRateInfos)
                     .build();
             invoiceDatas.add(invoiceData);
